@@ -24,7 +24,9 @@ public class AtesSistemi : MonoBehaviour
         // Eðer bu çizgi beyaz noktanla ayný yere bakmýyorsa, kamera baðlantýn yanlýþtýr.
         Debug.DrawRay(fpsCam.transform.position, fpsCam.transform.forward * 10f, Color.blue);
 
-        if (Input.GetButton("Fire1") && Time.time >= sonrakiAtesZamani)
+        // --- GÜNCELLEME BURADA ---
+        // Sadece Farenin Sol Týk (0) tuþuna basýldýðýnda çalýþýr. CTRL tuþunu iptal ettik.
+        if (Input.GetMouseButton(0) && Time.time >= sonrakiAtesZamani)
         {
             sonrakiAtesZamani = Time.time + atesAraligi;
             AtesEt();
