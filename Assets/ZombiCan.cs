@@ -55,13 +55,20 @@ public class ZombiCan : MonoBehaviour
             animator.SetTrigger("Olme");
         }
 
-        // 3. Collider'ý kapat (Ölü zombiye ateþ edilmesin)
+        // 3. YENÝ EKLENEN KISIM: Zombinin yapay zekasýný (hareket etmesini ve sana dönmesini) tamamen kapat
+        ZombieAI yapayZeka = GetComponent<ZombieAI>();
+        if (yapayZeka != null)
+        {
+            yapayZeka.ZombiyiOldur();
+        }
+
+        // 4. Collider'ý kapat (Ölü zombiye ateþ edilmesin ve havada asýlý kalmasýn)
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
         Debug.Log("Zombi etkisiz hale getirildi.");
 
-        // 4. Öldükten 5 saniye sonra (sesin bitmesi için süre tanýdýk) objeyi kaldýr
+        // 5. Öldükten 5 saniye sonra (sesin bitmesi için süre tanýdýk) objeyi kaldýr
         Destroy(gameObject, 5f);
     }
 }

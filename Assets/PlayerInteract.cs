@@ -4,15 +4,13 @@ public class PlayerInteract : MonoBehaviour
 {
     public float interactDistance = 3f;
     public GameObject interactUI;
-
-    // Kamerayý koda tanýttýk
     public Camera mainCamera;
 
     public static bool hasKey = false;
+    public static bool hasBossKey = false; // YENÝ: Boss anahtarý kontrolü
 
     void Start()
     {
-        // Eðer kamerayý sürüklemeyi unutursan, kod otomatik olarak sahnede MainCamera etiketli kamerayý bulur
         if (mainCamera == null)
         {
             mainCamera = Camera.main;
@@ -26,7 +24,6 @@ public class PlayerInteract : MonoBehaviour
             interactUI.SetActive(false);
         }
 
-        // Iþýnýn (Raycast) çýkýþ noktasýný artýk karakterin merkezi deðil, kameranýn merkezi yaptýk
         if (mainCamera != null)
         {
             Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
@@ -34,23 +31,29 @@ public class PlayerInteract : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, interactDistance))
             {
+                // 1. NORMAL ANAHTAR
                 if (hit.collider.CompareTag("Anahtar"))
                 {
                     interactUI.SetActive(true);
-
-                    if (Input.GetKeyDown(KeyCode.E))
-                    {
-                        hit.collider.GetComponent<KeyPickup>().TakeKey();
-                    }
+                    if (Input.GetKeyDown(KeyCode.E)) hit.collider.GetComponent<KeyPickup>().TakeKey();
                 }
+                // 2. NORMAL KAPI
                 else if (hit.collider.CompareTag("Kapi"))
                 {
                     interactUI.SetActive(true);
-
-                    if (Input.GetKeyDown(KeyCode.E) && hasKey)
-                    {
-                        hit.collider.GetComponentInParent<GateController>().OpenGate();
-                    }
+                    if (Input.GetKeyDown(KeyCode.E) && hasKey) hit.collider.GetComponentInParent<GateController>().OpenGate();
+                }
+                // 3. BOSS ANAHTARI
+                else if (hit.collider.CompareTag("BossAnahtar"))
+                {
+                    interactUI.SetActive(true);
+                    if (Input.GetKeyDown(KeyCode.E)) hit.collider.GetComponent<KeyPickup>().TakeKey();
+                }
+                // 4. BOSS KAPISI
+                else if (hit.collider.CompareTag("BossKapi"))
+                {
+                    interactUI.SetActive(true);
+                    if (Input.GetKeyDown(KeyCode.E) && hasBossKey) hit.collider.GetComponentInParent<GateController>().OpenGate();
                 }
             }
         }

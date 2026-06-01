@@ -10,6 +10,8 @@ TagManager:
   - Oyuncu
   - Anahtar
   - Kapi
+  - BossAnahtar
+  - BossKapi
   layers:
   - Default
   - TransparentFX

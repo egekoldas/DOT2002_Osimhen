@@ -2,17 +2,26 @@ using UnityEngine;
 
 public class KeyPickup : MonoBehaviour
 {
-    public GameObject isinKilici; // Gökyüzüne uzanan kýrmýzý ýþýn sütunu
+    public GameObject isinKilici;
+    public bool isBossKey = false; // YENÝ: Bu anahtar boss kapýsýna mý ait?
 
     public void TakeKey()
     {
-        PlayerInteract.hasKey = true; // Anahtar artýk envanterde
+        // Eðer bu bir boss anahtarýysa boss yetkisini aç, deðilse normal kapý yetkisini aç
+        if (isBossKey)
+        {
+            PlayerInteract.hasBossKey = true;
+        }
+        else
+        {
+            PlayerInteract.hasKey = true;
+        }
 
         if (isinKilici != null)
         {
-            isinKilici.SetActive(true); // Kapýdaki devasa kýrmýzý ýþýný yak
+            isinKilici.SetActive(true);
         }
 
-        Destroy(gameObject); // Yerden anahtar modelini yok et
+        Destroy(gameObject);
     }
 }
