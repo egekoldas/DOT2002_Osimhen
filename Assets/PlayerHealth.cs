@@ -1,13 +1,12 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI; // YENÝ: Arayüz (UI) kütüphanesini koda dahil ettik
+using UnityEngine.UI; // Arayüz (UI) kütüphanesini koda dahil ettik
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
 
-    // YENÝ: Unity'den sürükleyip býrakacaðýmýz can barý deðiþkeni
+    // Unity'den sürükleyip býrakacaðýmýz can barý deðiþkeni
     public Slider canBariUI;
 
     void Start()
@@ -27,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damageAmount;
         Debug.Log("Zombi vurdu! Kalan Can: " + currentHealth);
 
-        // YENÝ: Hasar yediðinde can barýnýn görselini yeni can deðerine göre güncelle (Azalt)
+        // Hasar yediðinde can barýnýn görselini yeni can deðerine göre güncelle (Azalt)
         if (canBariUI != null)
         {
             canBariUI.value = currentHealth;
@@ -41,7 +40,13 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Öldün! Oyun baþtan baþlýyor...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("Karakter öldü! Kaybetme ekraný tetikleniyor...");
+
+        // YENÝ DÜZELTÝLEN KISIM: GameManager'ý bulup kaybetme ekranýný açmasýný söylüyoruz
+        OyunYoneticisi yonetici = FindObjectOfType<OyunYoneticisi>();
+        if (yonetici != null)
+        {
+            yonetici.OyunuKaybetmeSistemi();
+        }
     }
 }

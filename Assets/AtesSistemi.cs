@@ -20,12 +20,8 @@ public class AtesSistemi : MonoBehaviour
 
     void Update()
     {
-        // MERKEZÝ KONTROL ETMEK ÝÇÝN: Sahne ekranýnda (Scene) her zaman mavi bir çizgi çizer
-        // Eðer bu çizgi beyaz noktanla ayný yere bakmýyorsa, kamera baðlantýn yanlýþtýr.
         Debug.DrawRay(fpsCam.transform.position, fpsCam.transform.forward * 10f, Color.blue);
 
-        // --- GÜNCELLEME BURADA ---
-        // Sadece Farenin Sol Týk (0) tuþuna basýldýðýnda çalýþýr. CTRL tuþunu iptal ettik.
         if (Input.GetMouseButton(0) && Time.time >= sonrakiAtesZamani)
         {
             sonrakiAtesZamani = Time.time + atesAraligi;
@@ -37,30 +33,36 @@ public class AtesSistemi : MonoBehaviour
 
     void AtesEt()
     {
-        // 1. Ekranýn tam ortasýný (0.5, 0.5) hedef al
         Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
         Vector3 hedefNokta;
 
-        // Iþýný vücudun 1.2 metre ilerisinden baþlat (Karaktere çarpmamasý için)
         ray.origin = ray.GetPoint(1.2f);
 
-        // Oyuncu layer'ýný yok say
         int layerMask = ~LayerMask.GetMask("Oyuncu");
 
         if (Physics.Raycast(ray, out hit, 100f, layerMask))
         {
             hedefNokta = hit.point;
 
-            // HATA AYIKLAMA: Ateþ ettiðin an sahne ekranýnda KIRMIZI bir çizgi çýkar
-            // Eðer zombiye vurduðun halde caný gitmiyorsa sorun Zombi scriptindedir.
             Debug.DrawLine(ray.origin, hit.point, Color.red, 2f);
 
+            // 1. NORMAL ZOMBÝ KONTROLÜ
             ZombiCan zombi = hit.transform.GetComponentInParent<ZombiCan>();
             if (zombi != null)
             {
                 if (hit.collider.CompareTag("Kafa")) zombi.HasarAl(50f);
                 else if (hit.collider.CompareTag("Gövde")) zombi.HasarAl(25f);
+            }
+
+            // 2. YENÝ EKLENEN KISIM: BOSS KONTROLÜ
+            BossCan boss = hit.transform.GetComponentInParent<BossCan>();
+            if (boss != null)
+            {
+                // Boss'u kafadan veya gövdeden vurma kontrolü
+                if (hit.collider.CompareTag("Kafa")) boss.HasarAl(50f);
+                else if (hit.collider.CompareTag("Gövde")) boss.HasarAl(25f);
+                else boss.HasarAl(25f); // Eðer Boss'ta Kafa/Gövde etiketi yoksa standart 25 hasar vursun
             }
         }
         else
@@ -68,7 +70,6 @@ public class AtesSistemi : MonoBehaviour
             hedefNokta = ray.GetPoint(100f);
         }
 
-        // 2. Mermiyi OLUÞTUR ve HEDEFE fýrlat
         Vector3 atisYonu = (hedefNokta - atesNoktasi.position).normalized;
         GameObject yeniMermi = Instantiate(mermiPrefab, atesNoktasi.position, Quaternion.LookRotation(atisYonu));
 
