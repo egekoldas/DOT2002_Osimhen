@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Animations.Rigging; // YENÝ: Rig sistemi için gerekli kütüphane
+using UnityEngine.Animations.Rigging;
 
 public class ElDuzenleyici : MonoBehaviour
 {
     public Animator animator;
-    public RigBuilder rigBuilder; // YENÝ: Unity'deki RigBuilder bileþeni
+    public RigBuilder rigBuilder;
 
     [Header("Sað El (Silahýn Olduðu El)")]
     public Transform sagElKemigi;
@@ -17,34 +17,40 @@ public class ElDuzenleyici : MonoBehaviour
 
     private bool sistemHazir = false;
 
+    void Awake()
+    {
+        // GÜVENLÝK KÝLÝDÝ: Menüden gelirken zaman donuk kaldýysa zorla aç!
+        Time.timeScale = 1f;
+    }
+
     void Start()
     {
         sistemHazir = false;
-        StartCoroutine(TamYuklenmeBekle());
+        StartCoroutine(SokTedavisi());
     }
 
-    IEnumerator TamYuklenmeBekle()
+    IEnumerator SokTedavisi()
     {
-        // 1. ADIM: Karakter doðduðunda bozulan Rig (Ýskelet) sistemini zorla yeniden inþa et!
+        // Sistemin kendine gelmesi için saniyenin onda biri kadar bekle
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        // EN KESÝN ÇÖZÜM: Rig sisteminin fiþini çekip geri takýyoruz
         if (rigBuilder != null)
         {
-            rigBuilder.Build();
+            rigBuilder.enabled = false; // Kapat
+            yield return null; // 1 kare bekle
+            rigBuilder.enabled = true; // Geri aç
+            rigBuilder.Build(); // Þimdi zorla inþa et
         }
 
-        // 2. ADIM: Animator hafýzasýný temizle ve SilahKatmani'ni aktif et
         if (animator != null)
         {
-            // SilahKatmani (Index 1) aðýrlýðýný zorla 1 yapýyoruz
             animator.SetLayerWeight(1, 1f);
-
             animator.Rebind();
             animator.Update(0f);
         }
 
-        // Oyun motorunun kemikleri yerine oturtmasý için çok kýsa bir süre bekle
-        yield return new WaitForSeconds(0.1f);
-
-        sistemHazir = true; // Her þey yerine oturdu, kaydýrmaya baþlayabilirsin!
+        sistemHazir = true;
     }
 
     void LateUpdate()
